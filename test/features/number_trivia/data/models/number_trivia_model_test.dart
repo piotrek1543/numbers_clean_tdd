@@ -19,16 +19,15 @@ void main() {
 
   group('fromJson', () {
     test(
-      'should return a JSON map containing the proper data',
+      'should return a valid model when the JSON number is an integer',
       () async {
+        // arrange
+        final Map<String, dynamic> jsonMap =
+            json.decode(fixture('trivia.json'));
         // act
-        final result = tNumberTriviaModel.toJson();
+        final result = NumberTriviaModel.fromJson(jsonMap);
         // assert
-        final expectedJsonMap = {
-          "text": "Test Text",
-          "number": 1,
-        };
-        expect(result, expectedJsonMap);
+        expect(result, tNumberTriviaModel);
       },
     );
 
@@ -42,6 +41,20 @@ void main() {
         final result = NumberTriviaModel.fromJson(jsonMap);
         // assert
         expect(result, tNumberTriviaModel);
+      },
+    );
+
+       test(
+      'should return a JSON map containing the proper data',
+      () async {
+        // act
+        final result = tNumberTriviaModel.toJson();
+        // assert
+        final expectedJsonMap = {
+          "text": "Test Text",
+          "number": 1,
+        };
+        expect(result, expectedJsonMap);
       },
     );
   });
