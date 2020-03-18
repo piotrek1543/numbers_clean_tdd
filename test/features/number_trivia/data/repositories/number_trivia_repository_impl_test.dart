@@ -34,34 +34,50 @@ void main() {
     );
   });
 
+  void runTestsOnline(Function body) {
+    group('device is online', () {
+      setUp(() {
+        when(mockNetworkInfo.isConnected).thenAnswer((_) async => true);
+      });
+
+      body();
+    });
+  }
+
+  void runTestsOffline(Function body) {
+    group('device is offline', () {
+      setUp(() {
+        when(mockNetworkInfo.isConnected).thenAnswer((_) async => false);
+      });
+
+      body();
+    });
+  }
+
   group('getConcreteNumberTrivia', () {
-    // DATA FOR THE MOCKS AND ASSERTIONS
-    // We'll use these three variables throughout all the tests
     final tNumber = 1;
     final tNumberTriviaModel =
         NumberTriviaModel(number: tNumber, text: 'test trivia');
     final NumberTrivia tNumberTrivia = tNumberTriviaModel;
 
-    test('should check if the device is online', () {
-      //arrange
-      when(mockNetworkInfo.isConnected).thenAnswer((_) async => true);
-      // act
-      repository.getConcreteNumberTrivia(tNumber);
-      // assert
-      verify(mockNetworkInfo.isConnected);
-    });
-
-    group('device is online', () {
-      // This setUp applies only to the 'device is online' group
-      setUp(() {
+    test(
+      'should check if the device is online',
+      () async {
+        // arrange
         when(mockNetworkInfo.isConnected).thenAnswer((_) async => true);
-      });
+        // act
+        repository.getConcreteNumberTrivia(tNumber);
+        // assert
+        verify(mockNetworkInfo.isConnected);
+      },
+    );
 
+    runTestsOnline(() {
       test(
         'should return remote data when the call to remote data source is successful',
         () async {
           // arrange
-          when(mockRemoteDataSource.getConcreteNumberTrivia(tNumber))
+          when(mockRemoteDataSource.getConcreteNumberTrivia(any))
               .thenAnswer((_) async => tNumberTriviaModel);
           // act
           final result = await repository.getConcreteNumberTrivia(tNumber);
@@ -70,28 +86,38 @@ void main() {
           expect(result, equals(Right(tNumberTrivia)));
         },
       );
+
+      test(
+        'should cache the data locally when the call to remote data source is successful',
+        () async {
+          // arrange
+          when(mockRemoteDataSource.getConcreteNumberTrivia(any))
+              .thenAnswer((_) async => tNumberTriviaModel);
+          // act
+          await repository.getConcreteNumberTrivia(tNumber);
+          // assert
+          verify(mockRemoteDataSource.getConcreteNumberTrivia(tNumber));
+          verify(mockLocalDataSource.cacheNumberTrivia(tNumberTriviaModel));
+        },
+      );
+
+      test(
+        'should return server failure when the call to remote data source is unsuccessful',
+        () async {
+          // arrange
+          when(mockRemoteDataSource.getConcreteNumberTrivia(any))
+              .thenThrow(ServerException());
+          // act
+          final result = await repository.getConcreteNumberTrivia(tNumber);
+          // assert
+          verify(mockRemoteDataSource.getConcreteNumberTrivia(tNumber));
+          verifyZeroInteractions(mockLocalDataSource);
+          expect(result, equals(Left(ServerFailure())));
+        },
+      );
     });
 
-    test(
-      'should return server failure when the call to remote data source is unsuccessful',
-      () async {
-        // arrange
-        when(mockRemoteDataSource.getConcreteNumberTrivia(tNumber))
-            .thenThrow(ServerException());
-        // act
-        final result = await repository.getConcreteNumberTrivia(tNumber);
-        // assert
-        verify(mockRemoteDataSource.getConcreteNumberTrivia(tNumber));
-        verifyZeroInteractions(mockLocalDataSource);
-        expect(result, equals(Left(ServerFailure())));
-      },
-    );
-
-    group('device is offline', () {
-      setUp(() {
-        when(mockNetworkInfo.isConnected).thenAnswer((_) async => false);
-      });
-
+    runTestsOffline(() {
       test(
         'should return last locally cached data when the cached data is present',
         () async {
