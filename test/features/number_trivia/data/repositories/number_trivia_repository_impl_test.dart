@@ -88,11 +88,24 @@ void main() {
     );
 
     group('device is offline', () {
-      //TODO: Add test cases when a user is offline
-      // This setUp applies only to the 'device is offline' group
       setUp(() {
         when(mockNetworkInfo.isConnected).thenAnswer((_) async => false);
       });
+
+      test(
+        'should return last locally cached data when the cached data is present',
+        () async {
+          // arrange
+          when(mockLocalDataSource.getLastNumberTrivia())
+              .thenAnswer((_) async => tNumberTriviaModel);
+          // act
+          final result = await repository.getConcreteNumberTrivia(tNumber);
+          // assert
+          verifyZeroInteractions(mockRemoteDataSource);
+          verify(mockLocalDataSource.getLastNumberTrivia());
+          expect(result, equals(Right(tNumberTrivia)));
+        },
+      );
     });
   });
 }
