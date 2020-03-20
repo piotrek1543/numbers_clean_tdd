@@ -1,7 +1,9 @@
 import 'dart:convert';
 
-import 'package:flutter_test/flutter_test.dart';
+import 'package:matcher/matcher.dart';
 import 'package:mockito/mockito.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:number_trivia/core/error/exceptions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:number_trivia/features/number_trivia/data/models/number_trivia_model.dart';
 import 'package:number_trivia/features/number_trivia/data/datasources/number_trivia_local_data_source.dart';
@@ -34,9 +36,21 @@ void main() {
         // act
         final result = await dataSource.getLastNumberTrivia();
         // assert
-        verify(mockSharedPreferences.getString('CACHED_NUMBER_TRIVIA'));
+        verify(mockSharedPreferences.getString(CACHED_NUMBER_TRIVIA));
         expect(result, equals(tNumberTriviaModel));
       },
     );
+
+    test('should throw a CacheException when there is not a cached value', () {
+      // arrange
+      when(mockSharedPreferences.getString(any)).thenReturn(null);
+      // act
+      // Not calling the method here, just storing it inside a call variable
+      final call = dataSource.getLastNumberTrivia;
+      // assert
+      // Calling the method happens from a higher-order function passed.
+      // This is needed to test if calling a method throws an exception.
+      expect(() => call(), throwsA(TypeMatcher<CacheException>()));
+    });
   });
 }
