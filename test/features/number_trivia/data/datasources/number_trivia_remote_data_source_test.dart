@@ -16,4 +16,25 @@ void main() {
     mockHttpClient = MockHttpClient();
     dataSource = NumberTriviaRemoteDataSourceImpl(client: mockHttpClient);
   });
+
+  group('getConcreteNumberTrivia', () {
+    final tNumber = 1;
+
+    test(
+      'should preform a GET request on a URL with number being the endpoint and with application/json header',
+      () {
+        //arrange
+        when(mockHttpClient.get(any, headers: anyNamed('headers'))).thenAnswer(
+          (_) async => http.Response(fixture('trivia.json'), 200),
+        );
+        // act
+        dataSource.getConcreteNumberTrivia(tNumber);
+        // assert
+        verify(mockHttpClient.get(
+          'http://numbersapi.com/$tNumber',
+          headers: {'Content-Type': 'application/json'},
+        ));
+      },
+    );
+  });
 }
