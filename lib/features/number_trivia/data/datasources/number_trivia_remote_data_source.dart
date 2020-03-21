@@ -20,11 +20,13 @@ class NumberTriviaRemoteDataSourceImpl implements NumberTriviaRemoteDataSource {
   NumberTriviaRemoteDataSourceImpl({@required this.client});
 
   @override
-  Future<NumberTriviaModel> getConcreteNumberTrivia(int number) {
-    client.get(
+  Future<NumberTriviaModel> getConcreteNumberTrivia(int number) async {
+    final response = await client.get(
       'http://numbersapi.com/$number',
       headers: {'Content-Type': 'application/json'},
     );
+
+    return NumberTriviaModel.fromJson(json.decode(response.body));
   }
 
   @override
