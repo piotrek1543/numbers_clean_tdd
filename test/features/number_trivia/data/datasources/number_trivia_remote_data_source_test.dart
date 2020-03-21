@@ -1,9 +1,10 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:matcher/matcher.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:number_trivia/core/error/exceptions.dart';
 import 'package:number_trivia/features/number_trivia/data/datasources/number_trivia_remote_data_source.dart';
 import 'package:number_trivia/features/number_trivia/data/models/number_trivia_model.dart';
 
@@ -53,6 +54,34 @@ void main() {
         final result = await dataSource.getConcreteNumberTrivia(tNumber);
         // assert
         expect(result, equals(tNumberTriviaModel));
+      },
+    );
+
+    test(
+      'should throw a ServerException when the response code is 404 or other',
+      () async {
+        // arrange
+        when(mockHttpClient.get(any, headers: anyNamed('headers'))).thenAnswer(
+          (_) async => http.Response('Something went wrong', 404),
+        );
+        // act
+        final call = dataSource.getConcreteNumberTrivia;
+        // assert
+        expect(() => call(tNumber), throwsA(TypeMatcher<ServerException>()));
+      },
+    );
+
+    test(
+      'should throw a ServerException when the response code is 404 or other',
+      () async {
+        // arrange
+        when(mockHttpClient.get(any, headers: anyNamed('headers'))).thenAnswer(
+          (_) async => http.Response('Something went wrong', 404),
+        );
+        // act
+        final call = dataSource.getConcreteNumberTrivia;
+        // assert
+        expect(() => call(tNumber), throwsA(TypeMatcher<ServerException>()));
       },
     );
   });
