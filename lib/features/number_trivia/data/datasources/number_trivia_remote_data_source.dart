@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:meta/meta.dart';
 import 'package:http/http.dart' as http;
 import 'package:number_trivia/core/error/exceptions.dart';
