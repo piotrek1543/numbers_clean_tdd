@@ -3,7 +3,7 @@ import 'package:mockito/mockito.dart';
 import 'package:number_trivia/core/util/input_converter.dart';
 import 'package:number_trivia/features/number_trivia/domain/usecases/get_concrete_number_trivia.dart';
 import 'package:number_trivia/features/number_trivia/domain/usecases/get_random_number_trivia.dart';
-import 'package:number_trivia/features/number_trivia/presentation/bloc/bloc/number_trivia_bloc.dart';
+import 'package:number_trivia/features/number_trivia/presentation/bloc/number_trivia_bloc.dart';
 
 class MockGetConcreteNumberTrivia extends Mock
     implements GetConcreteNumberTrivia {}
