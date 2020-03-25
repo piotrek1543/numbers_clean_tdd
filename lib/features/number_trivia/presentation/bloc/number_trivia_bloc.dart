@@ -48,10 +48,15 @@ class NumberTriviaBloc extends Bloc<NumberTriviaEvent, NumberTriviaState> {
         (failure) async* {
           yield Error(message: INVALID_INPUT_FAILURE_MESSAGE);
         },
-        (integer)  {
-          //implemented just enough code for the test to pass
-          //TODO: Fix the method doesn't return a Stream
-          getConcreteNumberTrivia(Params(number: integer));
+        (integer) async* {
+          yield Loading();
+          final failureOrTrivia = await getConcreteNumberTrivia(
+            Params(number: integer),
+          );
+          yield failureOrTrivia.fold(
+            (failure) => throw UnimplementedError(),
+            (trivia) => Loaded(trivia: trivia),
+          );
         },
       );
     }
