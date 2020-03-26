@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:dartz/dartz.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
 import 'package:number_trivia/core/error/failures.dart';
@@ -23,11 +24,9 @@ class NumberTriviaBloc extends Bloc<NumberTriviaEvent, NumberTriviaState> {
   final InputConverter inputConverter;
 
   NumberTriviaBloc({
-    // Changed the name of the constructor parameter (cannot use 'this.')
     @required GetConcreteNumberTrivia concrete,
     @required GetRandomNumberTrivia random,
     @required this.inputConverter,
-    // Asserts are how you can make sure that a passed in argument is not null.
   })  : assert(concrete != null),
         assert(random != null),
         assert(inputConverter != null),
@@ -51,16 +50,25 @@ class NumberTriviaBloc extends Bloc<NumberTriviaEvent, NumberTriviaState> {
         },
         (integer) async* {
           yield Loading();
-          final failureOrTrivia = await getConcreteNumberTrivia(
-            Params(number: integer),
-          );
-          yield failureOrTrivia.fold(
-            (failure) => Error(message: _mapFailureToMessage(failure)),
-            (trivia) => Loaded(trivia: trivia),
-          );
+          final failureOrTrivia =
+              await getConcreteNumberTrivia(Params(number: integer));
+          yield* _eitherLoadedOrErrorState(failureOrTrivia);
         },
       );
+    } else if (event is GetTriviaForRandomNumber) {
+      yield Loading();
+      final failureOrTrivia = await getRandomNumberTrivia(NoParams());
+      yield* _eitherLoadedOrErrorState(failureOrTrivia);
     }
+  }
+
+  Stream<NumberTriviaState> _eitherLoadedOrErrorState(
+    Either<Failure, NumberTrivia> failureOrTrivia,
+  ) async* {
+    yield failureOrTrivia.fold(
+      (failure) => Error(message: _mapFailureToMessage(failure)),
+      (trivia) => Loaded(trivia: trivia),
+    );
   }
 
   String _mapFailureToMessage(Failure failure) {
@@ -70,7 +78,7 @@ class NumberTriviaBloc extends Bloc<NumberTriviaEvent, NumberTriviaState> {
       case CacheFailure:
         return CACHE_FAILURE_MESSAGE;
       default:
-        return 'Unexpected Error';
+        return 'Unexpected error';
     }
   }
 }
