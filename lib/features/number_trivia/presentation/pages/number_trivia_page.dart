@@ -24,11 +24,19 @@ class NumberTriviaPage extends StatelessWidget {
             children: <Widget>[
               SizedBox(height: 10),
               // Top half
-              Container(
-                // Third of the size of the screen
-                height: MediaQuery.of(context).size.height / 3,
-                // Message Text widgets / CircularLoadingIndicator
-                child: Placeholder(),
+              BlocBuilder<NumberTriviaBloc, NumberTriviaState>(
+                builder: (context, state) {
+                  if (state is Empty) {
+                    return Container(
+                      // Third of the size of the screen
+                      height: MediaQuery.of(context).size.height / 3,
+                      child: Center(
+                        child: Text('Start searching!'),
+                      ),
+                    );
+                  }
+                  //TODO: check for the other states
+                },
               ),
               SizedBox(height: 20),
               // Bottom half
