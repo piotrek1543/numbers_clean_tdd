@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:number_trivia/features/number_trivia/presentation/bloc/number_trivia_bloc.dart';
+import 'package:number_trivia/features/number_trivia/presentation/widgets/message_display.dart';
 import 'package:number_trivia/injection_container.dart';
 
 class NumberTriviaPage extends StatelessWidget {
@@ -27,15 +28,10 @@ class NumberTriviaPage extends StatelessWidget {
               BlocBuilder<NumberTriviaBloc, NumberTriviaState>(
                 builder: (context, state) {
                   if (state is Empty) {
-                    return Container(
-                      // Third of the size of the screen
-                      height: MediaQuery.of(context).size.height / 3,
-                      child: Center(
-                        child: Text('Start searching!'),
-                      ),
+                    return MessageDisplay(
+                      message: 'Start searching!',
                     );
                   }
-                  //TODO: check for the other states
                 },
               ),
               SizedBox(height: 20),
