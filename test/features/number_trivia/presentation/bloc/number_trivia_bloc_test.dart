@@ -39,11 +39,8 @@ void main() {
   });
 
   group('GetTriviaForConcreteNumber', () {
-    // The event takes in a String
     final tNumberString = '1';
-    // This is the successful output of the InputConverter
-    final tNumberParsed = int.parse(tNumberString);
-    // NumberTrivia instance is needed too, of course
+    final tNumberParsed = 1;
     final tNumberTrivia = NumberTrivia(number: 1, text: 'test trivia');
 
     void setUpMockInputConverterSuccess() =>
@@ -56,7 +53,7 @@ void main() {
         // arrange
         setUpMockInputConverterSuccess();
         // act
-        bloc.dispatch(GetTriviaForConcreteNumber(tNumberString));
+        bloc.add(GetTriviaForConcreteNumber(tNumberString));
         await untilCalled(mockInputConverter.stringToUnsignedInteger(any));
         // assert
         verify(mockInputConverter.stringToUnsignedInteger(tNumberString));
@@ -71,13 +68,12 @@ void main() {
             .thenReturn(Left(InvalidInputFailure()));
         // assert later
         final expected = [
-          // The initial state is always emitted first
           Empty(),
           Error(message: INVALID_INPUT_FAILURE_MESSAGE),
         ];
-        expectLater(bloc.state, emitsInOrder(expected));
+        expectLater(bloc, emitsInOrder(expected));
         // act
-        bloc.dispatch(GetTriviaForConcreteNumber(tNumberString));
+        bloc.add(GetTriviaForConcreteNumber(tNumberString));
       },
     );
 
@@ -89,7 +85,7 @@ void main() {
         when(mockGetConcreteNumberTrivia(any))
             .thenAnswer((_) async => Right(tNumberTrivia));
         // act
-        bloc.dispatch(GetTriviaForConcreteNumber(tNumberString));
+        bloc.add(GetTriviaForConcreteNumber(tNumberString));
         await untilCalled(mockGetConcreteNumberTrivia(any));
         // assert
         verify(mockGetConcreteNumberTrivia(Params(number: tNumberParsed)));
@@ -109,9 +105,9 @@ void main() {
           Loading(),
           Loaded(trivia: tNumberTrivia),
         ];
-        expectLater(bloc.state, emitsInOrder(expected));
+        expectLater(bloc, emitsInOrder(expected));
         // act
-        bloc.dispatch(GetTriviaForConcreteNumber(tNumberString));
+        bloc.add(GetTriviaForConcreteNumber(tNumberString));
       },
     );
 
@@ -128,9 +124,9 @@ void main() {
           Loading(),
           Error(message: SERVER_FAILURE_MESSAGE),
         ];
-        expectLater(bloc.state, emitsInOrder(expected));
+        expectLater(bloc, emitsInOrder(expected));
         // act
-        bloc.dispatch(GetTriviaForConcreteNumber(tNumberString));
+        bloc.add(GetTriviaForConcreteNumber(tNumberString));
       },
     );
 
@@ -147,9 +143,9 @@ void main() {
           Loading(),
           Error(message: CACHE_FAILURE_MESSAGE),
         ];
-        expectLater(bloc.state, emitsInOrder(expected));
+        expectLater(bloc, emitsInOrder(expected));
         // act
-        bloc.dispatch(GetTriviaForConcreteNumber(tNumberString));
+        bloc.add(GetTriviaForConcreteNumber(tNumberString));
       },
     );
   });
@@ -164,7 +160,7 @@ void main() {
         when(mockGetRandomNumberTrivia(any))
             .thenAnswer((_) async => Right(tNumberTrivia));
         // act
-        bloc.dispatch(GetTriviaForRandomNumber());
+        bloc.add(GetTriviaForRandomNumber());
         await untilCalled(mockGetRandomNumberTrivia(any));
         // assert
         verify(mockGetRandomNumberTrivia(NoParams()));
@@ -183,9 +179,9 @@ void main() {
           Loading(),
           Loaded(trivia: tNumberTrivia),
         ];
-        expectLater(bloc.state, emitsInOrder(expected));
+        expectLater(bloc, emitsInOrder(expected));
         // act
-        bloc.dispatch(GetTriviaForRandomNumber());
+        bloc.add(GetTriviaForRandomNumber());
       },
     );
 
@@ -201,9 +197,9 @@ void main() {
           Loading(),
           Error(message: SERVER_FAILURE_MESSAGE),
         ];
-        expectLater(bloc.state, emitsInOrder(expected));
+        expectLater(bloc, emitsInOrder(expected));
         // act
-        bloc.dispatch(GetTriviaForRandomNumber());
+        bloc.add(GetTriviaForRandomNumber());
       },
     );
 
@@ -219,9 +215,9 @@ void main() {
           Loading(),
           Error(message: CACHE_FAILURE_MESSAGE),
         ];
-        expectLater(bloc.state, emitsInOrder(expected));
+        expectLater(bloc, emitsInOrder(expected));
         // act
-        bloc.dispatch(GetTriviaForRandomNumber());
+        bloc.add(GetTriviaForRandomNumber());
       },
     );
   });
