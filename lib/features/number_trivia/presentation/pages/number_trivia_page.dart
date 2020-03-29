@@ -12,7 +12,9 @@ class NumberTriviaPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Number Trivia'),
       ),
-      body: _buildBody(context),
+      body: SingleChildScrollView(
+        child: _buildBody(context),
+      ),
     );
   }
 
