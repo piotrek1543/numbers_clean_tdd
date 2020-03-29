@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:number_trivia/features/number_trivia/presentation/bloc/number_trivia_bloc.dart';
+import 'package:number_trivia/features/number_trivia/presentation/widgets/trivia_controls.dart';
 import 'package:number_trivia/features/number_trivia/presentation/widgets/widgets.dart';
 import 'package:number_trivia/injection_container.dart';
 
@@ -17,7 +18,7 @@ class NumberTriviaPage extends StatelessWidget {
 
   BlocProvider<NumberTriviaBloc> _buildBody(BuildContext context) {
     return BlocProvider(
-      builder: (_) => sl<NumberTriviaBloc>(),
+      create: (_) => sl<NumberTriviaBloc>(),
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(10),
@@ -34,9 +35,7 @@ class NumberTriviaPage extends StatelessWidget {
                   } else if (state is Loading) {
                     return LoadingWidget();
                   } else if (state is Loaded) {
-                    return TriviaDisplay(
-                      numberTrivia: state.trivia,
-                    );
+                    return TriviaDisplay(numberTrivia: state.trivia);
                   } else if (state is Error) {
                     return MessageDisplay(
                       message: state.message,
@@ -46,26 +45,7 @@ class NumberTriviaPage extends StatelessWidget {
               ),
               SizedBox(height: 20),
               // Bottom half
-              Column(
-                children: <Widget>[
-                  // TextField
-                  Placeholder(fallbackHeight: 40),
-                  SizedBox(height: 10),
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        // Search concrete button
-                        child: Placeholder(fallbackHeight: 30),
-                      ),
-                      SizedBox(width: 10),
-                      Expanded(
-                        // Random button
-                        child: Placeholder(fallbackHeight: 30),
-                      )
-                    ],
-                  )
-                ],
-              )
+              TriviaControls()
             ],
           ),
         ),
