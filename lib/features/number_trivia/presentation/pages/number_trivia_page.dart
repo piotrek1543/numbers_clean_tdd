@@ -43,6 +43,8 @@ class NumberTriviaPage extends StatelessWidget {
                       message: state.message,
                     );
                   }
+
+                  return Container();
                 },
               ),
               SizedBox(height: 20),

@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:equatable/equatable.dart';
 import 'package:number_trivia/core/error/failures.dart';
 import 'package:number_trivia/core/usecases/usecase.dart';
 import 'package:number_trivia/features/number_trivia/domain/entities/number_trivia.dart';
@@ -15,4 +16,7 @@ class GetRandomNumberTrivia extends UseCase<NumberTrivia, NoParams> {
   }
 }
 
-class NoParams {}
+class NoParams extends Equatable {
+  @override
+  List<Object> get props => null;
+}
